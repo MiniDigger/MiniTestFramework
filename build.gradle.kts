@@ -50,7 +50,7 @@ tasks {
 
 
 bukkit {
-    load = BukkitPluginDescription.PluginLoadOrder.STARTUP
+    load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
     main = "dev.benndorf.minitestframework.MiniTestFramework"
     apiVersion = "1.17"
     authors = listOf("MiniDigger")

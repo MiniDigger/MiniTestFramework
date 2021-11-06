@@ -8,4 +8,4 @@ registry.register("test", (helper) => {
 registry.register("test2", (helper) => {
     helper.pressButton(2, 3, 3);
     helper.succeedWhenEntityNotPresent(EntityType.PIG, 3, 2, 1);
-})
+});

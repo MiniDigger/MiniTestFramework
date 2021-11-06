@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testsuites name="MiniTestFramework Tests">
+    <testsuite failures="1" name="root" skipped="0" tests="2" time="5.1" timestamp="2021-11-06T20:51:11.188306100Z">
+        <testcase classname="test.test2" name="test.test2" time="4.088"/>
+        <testcase classname="test.test" name="test.test" time="5.177">
+            <failure message="Expected pig at -255,76,6 (relative: 1,2,3) (t=101)"/>
+        </testcase>
+    </testsuite>
+</testsuites>

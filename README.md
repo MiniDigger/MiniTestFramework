@@ -25,6 +25,11 @@ Integration Test Framework for Paper!
 
 Example: https://streamable.com/e/k6kngh
 
+## Running in CI
+
+When the plugin detects that the CI env var is set to true, it will automatically run all tests, write a test-results.xml (in junit format) and stop the server.  
+If exit code > 0, then X number of required tests failed. If exit code < 0, then X number of optional test failed. Exit code = 0 means happy day :)
+
 ## Contribution
 
 Best to hit me up on the paper discord: https://discord.gg/papermc  

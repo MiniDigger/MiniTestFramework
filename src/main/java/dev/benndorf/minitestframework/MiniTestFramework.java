@@ -1,16 +1,28 @@
 package dev.benndorf.minitestframework;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.gametest.framework.GameTestRegistry;
+import net.minecraft.gametest.framework.GameTestRunner;
+import net.minecraft.gametest.framework.GameTestTicker;
+import net.minecraft.gametest.framework.GlobalTestReporter;
+import net.minecraft.gametest.framework.MultipleTestTracker;
+import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.gametest.framework.TestCommand;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.levelgen.Heightmap;
 
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -18,18 +30,24 @@ import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_17_R1.command.VanillaCommandWrapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.benndorf.minitestframework.TSGenerator.TSType;
@@ -45,6 +63,27 @@ public final class MiniTestFramework extends JavaPlugin {
         this.initGameTest();
 
         this.getDataFolder().mkdirs();
+    }
+
+    @Override
+    public void onEnable() {
+        if ("true".equals(System.getenv("CI"))) {
+            try {
+                this.runAllTests(VanillaCommandWrapper.getListener(Bukkit.getConsoleSender()));
+            } catch (final Exception ex) {
+                this.getLog4JLogger().error("Error while running tests", ex);
+            }
+        }
+    }
+
+    private void runAllTests(final CommandSourceStack source) throws ParserConfigurationException {
+        GameTestRunner.clearMarkers(source.getLevel());
+        final Collection<TestFunction> testFunctions = GameTestRegistry.getAllTestFunctions();
+        source.sendSuccess(new TextComponent("Running all " + testFunctions.size() + " tests..."), false);
+        final BlockPos sourcePos = new BlockPos(source.getPosition());
+        final BlockPos startPos = new BlockPos(sourcePos.getX(), source.getLevel().getHeightmapPos(Heightmap.Types.WORLD_SURFACE, sourcePos).getY(), sourcePos.getZ() + 3);
+        final Collection<GameTestInfo> collection = GameTestRunner.runTests(testFunctions, startPos, StructureUtils.getRotationForRotationSteps(0), source.getLevel(), GameTestTicker.SINGLETON, 8);
+        GlobalTestReporter.replaceWith(new TestReporter(new File( "test-results.xml"), new MultipleTestTracker(collection)));
     }
 
     @Override

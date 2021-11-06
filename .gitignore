@@ -12,11 +12,9 @@ run/world_nether
 run/world_the_end
 run/banned-ips.json
 run/banned-players.json
-run/bukkit.yml
 run/commands.yml
 run/help.yml
 run/ops.json
-run/paper.yml
 run/permissions.yml
 run/spigot.yml
 run/usercache.json
