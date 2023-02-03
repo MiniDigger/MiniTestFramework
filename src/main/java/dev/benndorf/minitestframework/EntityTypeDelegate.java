@@ -30,7 +30,10 @@ import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.animal.TropicalFish;
 import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
+import net.minecraft.world.entity.animal.frog.Frog;
+import net.minecraft.world.entity.animal.frog.Tadpole;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.animal.horse.Donkey;
 import net.minecraft.world.entity.animal.horse.Horse;
@@ -107,6 +110,7 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.ChestBoat;
 import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
@@ -117,6 +121,7 @@ import net.minecraft.world.entity.vehicle.MinecartTNT;
 
 public class EntityTypeDelegate {
 
+    public static final EntityType<Allay> ALLAY = EntityType.ALLAY;
     public static final EntityType<AreaEffectCloud> AREA_EFFECT_CLOUD = EntityType.AREA_EFFECT_CLOUD;
     public static final EntityType<ArmorStand> ARMOR_STAND = EntityType.ARMOR_STAND;
     public static final EntityType<Arrow> ARROW = EntityType.ARROW;
@@ -127,6 +132,7 @@ public class EntityTypeDelegate {
     public static final EntityType<Boat> BOAT = EntityType.BOAT;
     public static final EntityType<Cat> CAT = EntityType.CAT;
     public static final EntityType<CaveSpider> CAVE_SPIDER = EntityType.CAVE_SPIDER;
+    public static final EntityType<ChestBoat> CHEST_BOAT = EntityType.CHEST_BOAT;
     public static final EntityType<Chicken> CHICKEN = EntityType.CHICKEN;
     public static final EntityType<Cod> COD = EntityType.COD;
     public static final EntityType<Cow> COW = EntityType.COW;
@@ -147,6 +153,7 @@ public class EntityTypeDelegate {
     public static final EntityType<FallingBlockEntity> FALLING_BLOCK = EntityType.FALLING_BLOCK;
     public static final EntityType<FireworkRocketEntity> FIREWORK_ROCKET = EntityType.FIREWORK_ROCKET;
     public static final EntityType<Fox> FOX = EntityType.FOX;
+    public static final EntityType<Frog> FROG = EntityType.FROG;
     public static final EntityType<Ghast> GHAST = EntityType.GHAST;
     public static final EntityType<Giant> GIANT = EntityType.GIANT;
     public static final EntityType<GlowItemFrame> GLOW_ITEM_FRAME = EntityType.GLOW_ITEM_FRAME;
@@ -210,6 +217,7 @@ public class EntityTypeDelegate {
     public static final EntityType<ThrownEnderpearl> ENDER_PEARL = EntityType.ENDER_PEARL;
     public static final EntityType<ThrownExperienceBottle> EXPERIENCE_BOTTLE = EntityType.EXPERIENCE_BOTTLE;
     public static final EntityType<ThrownPotion> POTION = EntityType.POTION;
+    public static final EntityType<Tadpole> TADPOLE = EntityType.TADPOLE;
     public static final EntityType<ThrownTrident> TRIDENT = EntityType.TRIDENT;
     public static final EntityType<TraderLlama> TRADER_LLAMA = EntityType.TRADER_LLAMA;
     public static final EntityType<TropicalFish> TROPICAL_FISH = EntityType.TROPICAL_FISH;
