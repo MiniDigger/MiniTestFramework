@@ -2,14 +2,14 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.1.14"
-    id("xyz.jpenilla.run-paper") version "1.0.4"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.0"
+    id("io.papermc.paperweight.userdev") version "1.4.1"
+    id("xyz.jpenilla.run-paper") version "2.0.1"
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 dependencies {
-    paperDevBundle("1.17.1-R0.1-SNAPSHOT")
+    paperDevBundle("1.19.3-R0.1-SNAPSHOT")
 
     val graalVersion = "21.2.0"
     implementation("org.graalvm.sdk:graal-sdk:$graalVersion")
@@ -23,7 +23,7 @@ dependencies {
 
 repositories {
     mavenCentral()
-    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://oss.sonatype.org/content/groups/public/")
 }
 
@@ -34,7 +34,7 @@ tasks {
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(16)
+        options.release.set(17)
         options.compilerArgs.add("-parameters")
     }
     processResources {
@@ -52,7 +52,7 @@ tasks {
 bukkit {
     load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
     main = "dev.benndorf.minitestframework.MiniTestFramework"
-    apiVersion = "1.17"
+    apiVersion = "1.19"
     authors = listOf("MiniDigger")
     commands {
         register("minitest") {
@@ -65,5 +65,5 @@ bukkit {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }

@@ -18,7 +18,8 @@ import net.minecraft.gametest.framework.MultipleTestTracker;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.gametest.framework.TestCommand;
 import net.minecraft.gametest.framework.TestFunction;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Rotation;
@@ -46,8 +47,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_17_R1.command.VanillaCommandWrapper;
+import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R2.command.VanillaCommandWrapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.benndorf.minitestframework.TSGenerator.TSType;
@@ -79,7 +80,7 @@ public final class MiniTestFramework extends JavaPlugin {
     private void runAllTests(final CommandSourceStack source) throws ParserConfigurationException {
         GameTestRunner.clearMarkers(source.getLevel());
         final Collection<TestFunction> testFunctions = GameTestRegistry.getAllTestFunctions();
-        source.sendSuccess(new TextComponent("Running all " + testFunctions.size() + " tests..."), false);
+        source.sendSuccess(Component.literal("Running all " + testFunctions.size() + " tests..."), false);
         final BlockPos sourcePos = new BlockPos(source.getPosition());
         final BlockPos startPos = new BlockPos(sourcePos.getX(), source.getLevel().getHeightmapPos(Heightmap.Types.WORLD_SURFACE, sourcePos).getY(), sourcePos.getZ() + 3);
         final Collection<GameTestInfo> collection = GameTestRunner.runTests(testFunctions, startPos, StructureUtils.getRotationForRotationSteps(0), source.getLevel(), GameTestTicker.SINGLETON, 8);

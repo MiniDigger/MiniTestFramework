@@ -12,7 +12,7 @@ import java.nio.file.StandardOpenOption;
 class TSGeneratorTest {
     @Test
     public void test() throws IOException {
-        final Path file = Path.of("D:\\IntellijProjects\\PaperGameTest\\run\\plugins\\MiniTestFramework\\node_modules\\helper.d.ts");
+        final Path file = Path.of("run/plugins/MiniTestFramework/node_modules/helper.d.ts");
         final String sb =
                 TSGenerator.generate("EntityType", EntityTypeDelegate.class) +
                 TSGenerator.generate("helper", GameTestHelper.class) +
