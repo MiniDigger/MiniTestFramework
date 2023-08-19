@@ -1,4 +1,4 @@
-package dev.benndorf.minitestframework;
+package dev.benndorf.minitestframework.ci;
 
 import com.google.common.base.Stopwatch;
 
@@ -35,11 +35,14 @@ public class TestReporter implements net.minecraft.gametest.framework.TestReport
     private int successes;
     private final MultipleTestTracker tests;
 
-    public TestReporter(final File dest, final MultipleTestTracker tests) throws ParserConfigurationException {
+    private final boolean stopServer;
+
+    public TestReporter(final File dest, final MultipleTestTracker tests, final boolean stopServer) throws ParserConfigurationException {
         this.destination = dest;
         this.document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         this.testSuite = this.document.createElement("testsuite");
         this.tests = tests;
+        this.stopServer = stopServer;
 
         final Element testSuites = this.document.createElement("testsuites");
         testSuites.setAttribute("name", "MiniTestFramework Tests");
@@ -103,7 +106,9 @@ public class TestReporter implements net.minecraft.gametest.framework.TestReport
                 System.err.println(this.tests.getFailedOptionalCount() + " optional tests failed");
                 exitCode = exitCode > 0 ? exitCode : this.tests.getFailedOptionalCount() * -1;
             }
-            Runtime.getRuntime().halt(exitCode);
+            if (stopServer) {
+                Runtime.getRuntime().halt(exitCode);
+            }
         }
     }
 

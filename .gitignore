@@ -7,6 +7,7 @@ run/cache
 run/crash-reports
 run/logs
 run/plugins/bStats
+run/plugins/MiniTestFramework/minitestframework
 run/world
 run/world_nether
 run/world_the_end

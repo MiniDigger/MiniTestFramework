@@ -49,6 +49,9 @@ tasks {
     test {
         useJUnitPlatform()
     }
+    runServer {
+        jvmArgs("-Dnet.kyori.adventure.text.warnWhenLegacyFormattingDetected=false")
+    }
     runMojangMappedServer {
         jvmArgs("-Dnet.kyori.adventure.text.warnWhenLegacyFormattingDetected=false")
     }

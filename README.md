@@ -13,14 +13,15 @@ Integration Test Framework for Paper!
   * create <mytest>.js in plugin folder
   * register a new test case into the registry 
     ```js
+    import {registry, EntityType} from "./minitestframework/index.mjs";
     registry.register("test", (helper) => {
       helper.pressButton(3, 3, 3);
       helper.succeedWhenEntityPresent(EntityType.MINECART, 1, 2, 3);
     });
     ```
-  * use helper to do actions and assertions
+  * use helper to do actions and assertions (basic auto complete should be provided by the auto generated definition files)
   * use `/test pos` ingame to find relation locations
-* Reload script changes with `/mtest reload`
+* Reload script changes with `/minitest reload`
 * Run test via command block ingame or `/test run*` commands
 
 Example: https://streamable.com/e/k6kngh
