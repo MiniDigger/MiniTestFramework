@@ -19,7 +19,7 @@ public class TSGenerator {
         String value();
     }
 
-    public static String generate(final String alias, final Class clazz) {
+    public static String generate(final String alias, final Class<?> clazz) {
         final StringBuilder sb = new StringBuilder();
         sb.append("export const ").append(alias).append(": ").append(cleanName(clazz.getSimpleName())).append("\n");
         sb.append("export class ").append(cleanName(clazz.getSimpleName())).append(" {").append("\n");
@@ -48,7 +48,7 @@ public class TSGenerator {
         return sb.toString();
     }
 
-    private static Map<Class, String> mappings = new HashMap<>();
+    private static final Map<Class<?>, String> mappings = new HashMap<>();
 
     static {
         mappings.put(String.class, "string");
@@ -64,7 +64,7 @@ public class TSGenerator {
         mappings.put(boolean.class, "boolean");
     }
 
-    private static String type(final Class clazz, final TSType typeInfo) {
+    private static String type(final Class<?> clazz, final TSType typeInfo) {
         if (typeInfo != null && typeInfo.value() != null) {
             return typeInfo.value();
         }

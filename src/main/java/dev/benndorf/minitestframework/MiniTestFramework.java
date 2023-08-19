@@ -1,36 +1,30 @@
 package dev.benndorf.minitestframework;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
-import net.minecraft.ChatFormatting;
+import dev.benndorf.minitestframework.TSGenerator.TSType;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInfo;
-import net.minecraft.gametest.framework.GameTestListener;
-import net.minecraft.gametest.framework.GameTestRegistry;
-import net.minecraft.gametest.framework.GameTestRunner;
-import net.minecraft.gametest.framework.GameTestTicker;
-import net.minecraft.gametest.framework.GlobalTestReporter;
-import net.minecraft.gametest.framework.MultipleTestTracker;
-import net.minecraft.gametest.framework.StructureUtils;
-import net.minecraft.gametest.framework.TestCommand;
-import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.Heightmap;
-
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R1.command.VanillaCommandWrapper;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.jetbrains.annotations.NotNull;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -42,17 +36,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R2.command.VanillaCommandWrapper;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import dev.benndorf.minitestframework.TSGenerator.TSType;
-
 public final class MiniTestFramework extends JavaPlugin {
 
     private Engine engine;
@@ -61,7 +44,7 @@ public final class MiniTestFramework extends JavaPlugin {
     @Override
     public void onLoad() {
         this.initJS();
-        this.initGameTest();
+        this.registerCommand();
 
         this.getDataFolder().mkdirs();
     }
@@ -72,7 +55,7 @@ public final class MiniTestFramework extends JavaPlugin {
             try {
                 this.runAllTests(VanillaCommandWrapper.getListener(Bukkit.getConsoleSender()));
             } catch (final Exception ex) {
-                this.getLog4JLogger().error("Error while running tests", ex);
+                this.getSLF4JLogger().error("Error while running tests", ex);
             }
         }
     }
@@ -80,34 +63,16 @@ public final class MiniTestFramework extends JavaPlugin {
     private void runAllTests(final CommandSourceStack source) throws ParserConfigurationException {
         GameTestRunner.clearMarkers(source.getLevel());
         final Collection<TestFunction> testFunctions = GameTestRegistry.getAllTestFunctions();
-        source.sendSuccess(Component.literal("Running all " + testFunctions.size() + " tests..."), false);
-        final BlockPos sourcePos = new BlockPos(source.getPosition());
+        source.sendSuccess(() -> Component.literal("Running all " + testFunctions.size() + " tests..."), false);
+        final BlockPos sourcePos = new BlockPos((int) source.getPosition().x(), (int) source.getPosition().y(), (int) source.getPosition().z());
         final BlockPos startPos = new BlockPos(sourcePos.getX(), source.getLevel().getHeightmapPos(Heightmap.Types.WORLD_SURFACE, sourcePos).getY(), sourcePos.getZ() + 3);
         final Collection<GameTestInfo> collection = GameTestRunner.runTests(testFunctions, startPos, StructureUtils.getRotationForRotationSteps(0), source.getLevel(), GameTestTicker.SINGLETON, 8);
         GlobalTestReporter.replaceWith(new TestReporter(new File( "test-results.xml"), new MultipleTestTracker(collection)));
     }
 
-    @Override
-    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
-        if (command.getName().equalsIgnoreCase("minitest")) {
-            if (args.length == 0) {
-                sender.sendMessage("Plugin is enabled!");
-                return false;
-            }
-            if (args[0].equalsIgnoreCase("reload")) {
-                this.findTests();
-                sender.sendMessage("Reloaded!");
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private void initGameTest() {
-        SharedConstants.IS_RUNNING_IN_IDE = true;
-
+    private void registerCommand() {
         final CommandDispatcher<CommandSourceStack> dispatcher = ((CraftServer) this.getServer()).getServer().vanillaCommandDispatcher.getDispatcher();
-        TestCommand.register(dispatcher);
+        MiniTestCommand.register(dispatcher, this);
     }
 
     private void initJS() {
@@ -155,7 +120,7 @@ public final class MiniTestFramework extends JavaPlugin {
         return null;
     }
 
-    private void findTests() {
+    public void findTests() {
         GameTestRegistry.getAllTestClassNames().clear();
         GameTestRegistry.getAllTestFunctions().clear();
 
@@ -167,18 +132,18 @@ public final class MiniTestFramework extends JavaPlugin {
                             this.currentFileName = file.getFileName().toString().replace(".js", "");
                             this.execute(file);
                         } catch (final IOException ex) {
-                            this.getLog4JLogger().error("Error while executing file {}", file.getFileName(), ex);
+                            this.getSLF4JLogger().error("Error while executing file {}", file.getFileName(), ex);
                         } finally {
                             this.currentFileName = null;
                         }
                     });
         } catch (final IOException ex) {
-            this.getLog4JLogger().error("Error while scanning for files in {}", this.getDataFolder(), ex);
+            this.getSLF4JLogger().error("Error while scanning for files in {}", this.getDataFolder(), ex);
         }
 
         final String fileNames = String.join(", ", GameTestRegistry.getAllTestClassNames());
         final String testNames = GameTestRegistry.getAllTestFunctions().stream().map(TestFunction::getTestName).collect(Collectors.joining(", "));
-        this.getLog4JLogger().info("Found tests [{}] in files [{}]", testNames, fileNames);
+        this.getSLF4JLogger().info("Found tests [{}] in files [{}]", testNames, fileNames);
     }
 
     private Context createContext() {

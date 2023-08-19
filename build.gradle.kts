@@ -2,23 +2,26 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.4.1"
-    id("xyz.jpenilla.run-paper") version "2.0.1"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("io.papermc.paperweight.userdev") version "1.5.5"
+    id("xyz.jpenilla.run-paper") version "2.1.0"
+    id("net.minecrell.plugin-yml.paper") version "0.6.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-dependencies {
-    paperDevBundle("1.19.3-R0.1-SNAPSHOT")
+val javaVersion = 17
 
-    val graalVersion = "21.2.0"
+dependencies {
+    paperweight.paperDevBundle("1.20.1-R0.1-SNAPSHOT")
+
+    val graalVersion = "23.0.1"
     implementation("org.graalvm.sdk:graal-sdk:$graalVersion")
     implementation("org.graalvm.js:js:$graalVersion")
     implementation("org.graalvm.truffle:truffle-api:$graalVersion")
 
-    testImplementation("org.assertj:assertj-core:3.12.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    val junitVersion = "5.10.0"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 repositories {
@@ -34,7 +37,7 @@ tasks {
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(javaVersion)
         options.compilerArgs.add("-parameters")
     }
     processResources {
@@ -46,24 +49,19 @@ tasks {
     test {
         useJUnitPlatform()
     }
-}
-
-
-bukkit {
-    load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
-    main = "dev.benndorf.minitestframework.MiniTestFramework"
-    apiVersion = "1.19"
-    authors = listOf("MiniDigger")
-    commands {
-        register("minitest") {
-            description = "Root command for MiniTestFramework"
-            aliases = listOf("mtest")
-            permission = "minitestframework"
-            usage = "minitest <reload>"
-        }
+    runMojangMappedServer {
+        jvmArgs("-Dnet.kyori.adventure.text.warnWhenLegacyFormattingDetected=false")
     }
 }
 
+paper {
+    load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
+    main = "dev.benndorf.minitestframework.MiniTestFramework"
+    bootstrapper = "dev.benndorf.minitestframework.MiniTestFrameworkBootstrap"
+    apiVersion = "1.20"
+    authors = listOf("MiniDigger")
+}
+
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
 }
